@@ -9,7 +9,7 @@ st.set_page_config(page_title="Invoice AI", layout="wide")
 st.title("Invoice Processing AI")
 st.write("Upload an invoice and extract structured data using AWS Textract")
 
-uploaded_file = st.file_uploader("Upload Invoice", type=["pdf", "png", "jpg", "jpeg"])
+uploaded_file = st.file_uploader("Upload Invoice", type=["pdf", "png", "jpg", "jpeg", "tiff", "tif"])
 
 if uploaded_file is not None:
     file_bytes = uploaded_file.read()
