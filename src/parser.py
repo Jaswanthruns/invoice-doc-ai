@@ -34,6 +34,25 @@ def parse_summary_fields(response):
     return result
 
 
+import re
+
+def split_description(text):
+    if not text:
+        return None, None, None
+
+    # Remove prices/numbers
+    cleaned = re.sub(r"\$?\d+(?:,\d{3})*(?:\.\d{2})?", "", text)
+    cleaned = re.sub(r"\s+", " ", cleaned).strip()
+
+    parts = cleaned.split(",")
+
+    product = parts[0].strip() if len(parts) > 0 else None
+    category = parts[1].strip() if len(parts) > 1 else None
+    sub_category = parts[2].strip() if len(parts) > 2 else None
+
+    return product, category, sub_category
+
+
 def parse_line_items(response):
     items = []
 
@@ -46,21 +65,33 @@ def parse_line_items(response):
     for group in line_groups:
         for line_item in group.get("LineItems", []):
             item_data = {
-                "description": None,
+                "product_name": None,
+                "category": None,
+                "sub_category": None,
                 "quantity": None,
                 "price": None,
             }
+
+            raw_description = ""
 
             for field in line_item.get("LineItemExpenseFields", []):
                 field_type = field.get("Type", {}).get("Text")
                 field_value = field.get("ValueDetection", {}).get("Text")
 
                 if field_type in ["ITEM", "EXPENSE_ROW"]:
-                    item_data["description"] = field_value
+                    raw_description += " " + (field_value or "")
+
                 elif field_type == "QUANTITY":
                     item_data["quantity"] = field_value
+
                 elif field_type == "PRICE":
                     item_data["price"] = field_value
+
+            product, category, sub_category = split_description(raw_description)
+
+            item_data["product_name"] = product
+            item_data["category"] = category
+            item_data["sub_category"] = sub_category
 
             items.append(item_data)
 
