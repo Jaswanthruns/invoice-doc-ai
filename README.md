@@ -2,7 +2,7 @@
 ![Upload Interface](assets/interface.png)
 
 ### Processed Document
-![Processed Document](assets/Processed_document.png)
+![Processed Document](assets/processed_document.png)
 
 # Invoice Processing AI
 
